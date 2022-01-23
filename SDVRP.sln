@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDVRP.App", "SDVRP.App\SDVRP.App.csproj", "{EFC7F9A2-3062-42A0-BE7E-C01BAF2BA952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDVRP.App.Tests", "SDVRP.App.Tests\SDVRP.App.Tests.csproj", "{C82DA4D7-C535-4CB3-8116-9207042D2D8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFC7F9A2-3062-42A0-BE7E-C01BAF2BA952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC7F9A2-3062-42A0-BE7E-C01BAF2BA952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC7F9A2-3062-42A0-BE7E-C01BAF2BA952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC7F9A2-3062-42A0-BE7E-C01BAF2BA952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C82DA4D7-C535-4CB3-8116-9207042D2D8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C82DA4D7-C535-4CB3-8116-9207042D2D8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C82DA4D7-C535-4CB3-8116-9207042D2D8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C82DA4D7-C535-4CB3-8116-9207042D2D8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

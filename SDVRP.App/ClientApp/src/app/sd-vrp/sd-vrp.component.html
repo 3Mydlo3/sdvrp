@@ -1,0 +1,68 @@
+<h1>SDVRP</h1>
+
+<div ID="GridContainer">
+  <div ID="MapContainer">
+<!--    <ng-template *ngFor="let point of points; let index = index">-->
+<!--      <i class="map-point">{{index}}</i>-->
+<!--    </ng-template>-->
+    <ng-container *ngFor="let point of points; let index = index">
+      <span class="map-point" style="left: {{point.position.x}}px; top: {{point.position.y}}px;">{{index}}</span>
+    </ng-container>
+  </div>
+
+  <div ID="PointsListContainer" *ngIf="points">
+    <table class='table table-striped' aria-labelledby="tableLabel">
+      <thead>
+      <tr>
+        <th>Indeks</th>
+        <th>Popyt</th>
+        <th>Akcja</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let point of points; let index = index">
+        <ng-container *ngIf="index != 0">
+          <td class="number-row">{{ index }}</td>
+          <td class="number-row"><input type="number" size="2" class="number-input" value="{{ point.demand }}"></td>
+          <td><button (click)="edit(index)">E</button><button (click)="delete(index)">D</button></td>
+        </ng-container>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div ID="ParametersContainer">
+    <div class="parameter-input">
+      <label for="FileUploadInput">Importuj</label>
+      <input type="file" id="FileUploadInput" (change)="importProblem($event)"><br/>
+      <button (click)="exportProblem(null)">Eksport</button>
+    </div>
+    <div class="parameter-input">
+      Ładowność pojazdu:<br/>
+      <input class="number-input" type="number" size="2" ID="VehicleCapacityInput">
+    </div>
+    <div class="parameter-input" ID="CostFunctionContainer">
+      Funkcja kosztu:<br/>
+      <input list="costFunctions" size="8" ID="CostFunctionTypeInput">
+      <datalist id="costFunctions">
+        <option label="Liniowa" value=0>
+        <option label="Nieliniowa 1" value=1>
+        <option label="Nieliniowa 2" value=2>
+      </datalist>
+    </div>
+<!--    <div class="parameter-input">-->
+<!--      TBD<br/>-->
+<!--      <input class="number-input" type="number" size="4">-->
+<!--    </div>-->
+  </div>
+
+  <div ID="ControlsContainer">
+    <div class="parameter-input">
+      Liczba iteracji:<br/>
+      <input class="number-input" type="number" size="4" value="10000" ID="MaxIterationsInput">
+    </div>
+    <button ID="SubmitButton" (click)="submit()">
+      Oblicz
+    </button>
+  </div>
+</div>
