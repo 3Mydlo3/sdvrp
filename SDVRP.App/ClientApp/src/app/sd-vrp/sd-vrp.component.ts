@@ -1,5 +1,7 @@
+import { OnInit, ChangeDetectorRef } from '@angular/core';
 import {Component, Inject} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
+import {style} from "@angular/animations";
 
 @Component({
   selector: 'app-sd-vrp',
@@ -9,12 +11,7 @@ import { HttpClient } from '@angular/common/http';
 
 export class SdvrpComponent {
   private static pointsData: MapPoint[] = [
-    { demand: 0, position: { x: 20, y: 30}},
-    { demand: 4, position: { x: 230, y: 90}},
-    { demand: 5, position: { x: 420, y: 230}},
-    { demand: 2, position: { x: 270, y: 200}},
-    { demand: 3, position: { x: 60, y: 170}},
-    { demand: 7, position: { x: 130, y: 230}}
+    { demand: 0, position: { x: 250, y: 140}}
   ];
   public get points() { return SdvrpComponent.pointsData; }
 
@@ -25,12 +22,17 @@ export class SdvrpComponent {
   private static active : boolean = false;
   private static currentX : number = 0;
   private static currentY : number = 0;
+  private static initialPointX : number = 0;
+  private static initialPointY : number = 0;
   private static initialX : number = 0;
   private static initialY : number = 0;
   private static xOffset : number = 0;
   private static yOffset : number = 0;
 
-  constructor(httpClient: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+  constructor(
+    httpClient: HttpClient,
+    @Inject('BASE_URL') baseUrl: string,
+    private changeDetectorRef: ChangeDetectorRef) {
     this.baseUrl = baseUrl;
     this.httpClient = httpClient;
 
@@ -62,6 +64,10 @@ export class SdvrpComponent {
                 id: problemPoint.id
               }
           })
+              .sort(x => x.id);
+            if (problem.nodes.some(x => problem.nodes.find(node => node.id == x.id) != undefined)) {
+              alert("There are node id duplicates in the import file, indexes might be wrong.")
+            }
           return problem;
         })
         .then(problem => {
@@ -71,7 +77,12 @@ export class SdvrpComponent {
         .then(problem => this.setVehicleCapacity(problem))
         .then(problem => this.setCostFunctionType(problem))
         .then(problem => this.setMaxIterations(problem))
-        .catch(error => console.error("Error loading problem from file", error.toString()));
+        .then(problem => this.setPoints(problem))
+        .catch(error => {
+          const message = "Error loading problem from file" + error.toString();
+          console.error(message);
+          alert(message);
+        });
     }
   }
 
@@ -125,6 +136,23 @@ export class SdvrpComponent {
     return problem;
   };
 
+  setPoints(problem: Problem): Problem {
+    SdvrpComponent.pointsData = problem.nodes
+      .sort(x => x.id)
+      .map(x => this.convertProblemPointToMap(x));
+    return problem;
+  }
+
+  convertProblemPointToMap(problemPoint: ProblemPoint): MapPoint {
+    return {
+      position: {
+        x: problemPoint.x,
+        y: problemPoint.y
+      },
+      demand: problemPoint.demand
+    }
+  }
+
   getProblemPoints(): ProblemPoint[] {
     let problemPoints: ProblemPoint[] = [];
     for (let i = 0; i < this.points.length; i++) {
@@ -162,10 +190,67 @@ export class SdvrpComponent {
       .subscribe(result => {
         console.log(JSON.stringify(result));
         this.showSolution(result);
-      }, error => console.error(`${error} | Request body ${JSON.stringify(problem)}`));
+      }, error => {
+
+        alert(`${error.status} ${error.statusText}: ${JSON.stringify(error.error.message)}`);
+        console.error(`${error.toString()} | Request body ${JSON.stringify(problem)}`);
+      });
   }
 
-  edit(index: number) {
+  updateDemand(event: Event, index: number) {
+    let input = event.target as HTMLInputElement;
+    let value = parseInt(input.value);
+    // let mapPoint = document.getElementById("POINT_" + index) as HTMLSpanElement;
+    let pointData = SdvrpComponent.pointsData[index];
+    SdvrpComponent.pointsData[index] = {
+      demand: value,
+      position: {
+        x: pointData.position.x,
+        y: pointData.position.y
+      }
+    };
+    this.changeDetectorRef.detectChanges();
+  }
+
+  positionXUpdate(event: Event, index: number) {
+    let input = event.target as HTMLInputElement;
+    let value = parseInt(input.value);
+    // let mapPoint = document.getElementById("POINT_" + index) as HTMLSpanElement;
+    let pointData = SdvrpComponent.pointsData[index];
+    SdvrpComponent.pointsData[index] = {
+      demand: pointData.demand,
+      position: {
+        x: value,
+        y: pointData.position.y
+      }
+    };
+    this.changeDetectorRef.detectChanges();
+    // SdvrpComponent.setTranslate(pointData.position.x, pointData.position.y, mapPoint);
+    // mapPoint.style = "left: " + pointData.position.x + "px; top: " + pointData.position.y + "px;"
+  }
+
+  positionYUpdate(event: Event, index: number) {
+    let input = event.target as HTMLInputElement;
+    let value = parseInt(input.value);
+    let pointData = SdvrpComponent.pointsData[index];
+    SdvrpComponent.pointsData[index] = {
+      demand: pointData.demand,
+      position: {
+        x: pointData.position.x,
+        y: value
+      }
+    };
+    this.changeDetectorRef.detectChanges();
+  }
+
+  addPoint() {
+    SdvrpComponent.pointsData.push({
+      position: {
+        x: 150,
+        y: 150
+      },
+      demand: 0
+    })
   }
 
   delete(index: number) {
@@ -182,11 +267,16 @@ export class SdvrpComponent {
         SdvrpComponent.activeItem = element as HTMLElement;
         if (element.classList.contains("map-point")) {
           SdvrpComponent.active = true;
+
+          let pointId = SdvrpComponent.getPointIdFromHtmlElement(SdvrpComponent.activeItem);
+          SdvrpComponent.initialPointX = SdvrpComponent.pointsData[pointId].position.x;
+          SdvrpComponent.initialPointY = SdvrpComponent.pointsData[pointId].position.y;
+
+          SdvrpComponent.initialX = mouseEvent.clientX - SdvrpComponent.xOffset;
+          SdvrpComponent.initialY = mouseEvent.clientY - SdvrpComponent.yOffset;
         }
       }
 
-      SdvrpComponent.initialX = mouseEvent.clientX - SdvrpComponent.xOffset;
-      SdvrpComponent.initialY = mouseEvent.clientY - SdvrpComponent.yOffset;
     }
   }
 
@@ -215,8 +305,22 @@ export class SdvrpComponent {
 
       let htmlElement = SdvrpComponent.activeItem;
       if (!htmlElement.classList.contains("map-point")) return;
+
+      let pointId = SdvrpComponent.getPointIdFromHtmlElement(htmlElement);
+      SdvrpComponent.pointsData[pointId] = {
+        demand: SdvrpComponent.pointsData[pointId].demand,
+        position: {
+          x: SdvrpComponent.initialPointX + SdvrpComponent.currentX,
+          y: SdvrpComponent.initialPointY + SdvrpComponent.currentY
+        }
+      }
+
       SdvrpComponent.setTranslate(SdvrpComponent.currentX, SdvrpComponent.currentY, htmlElement);
     }
+  }
+
+  static getPointIdFromHtmlElement(htmlElement: HTMLElement) {
+    return parseInt(htmlElement.id.slice("POINT_".length));
   }
 
   static setTranslate(xPos : number, yPos : number, el : HTMLElement) {
