@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.SpaServices.AngularCli;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,10 +15,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 
 app.MapControllerRoute(
     name: "default",
@@ -25,3 +25,28 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "ClientApp/dist";
+});
+
+app.UseStaticFiles();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseSpaStaticFiles();
+}
+
+
+app.UseSpa(spa =>
+{
+    // To learn more about options for serving an Angular SPA
+    // see https://go.microsoft.com/fwlink/?linkid=864501
+    spa.Options.SourcePath = "ClientApp";
+    if (app.Environment.IsDevelopment())
+    {
+        // spa.UseAngularCliServer(npmScript: "start");
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+    }
+});
