@@ -64,10 +64,26 @@ export class SdvrpComponent {
                 id: problemPoint.id
               }
           })
-              .sort(x => x.id);
-            if (problem.nodes.some(x => problem.nodes.find(node => node.id == x.id) != undefined)) {
-              alert("There are node id duplicates in the import file, indexes might be wrong.")
+            .sort(x => x.id);
+
+          let missingNodeIds: number[] = [];
+          for (let index = 0; index < problem.nodes.length; index++) {
+            if (!problem.nodes.some(x => x.id == index)) {
+              missingNodeIds.push(index);
             }
+          }
+
+          if (missingNodeIds.length > 0) {
+            let tooHightNodeIds: number[] = problem.nodes
+              .filter(x => x.id >= problem.nodes.length)
+              .map(x => x.id);
+
+            alert(`The import file has ${problem.nodes.length} nodes but misses nodes with id: ${missingNodeIds.toString()}, and has nodes with too high id: ${tooHightNodeIds.toString()}`)
+          }
+
+          if (problem.nodes.some(x => problem.nodes.filter(node => node.id == x.id).length > 1)) {
+            alert("There are node id duplicates in the import file, indexes might be wrong.")
+          }
           return problem;
         })
         .then(problem => {
