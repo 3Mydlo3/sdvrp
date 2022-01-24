@@ -31,6 +31,7 @@ public class GreedySolutionCreator
 
         return new Solution(_costFunction)
         {
+            Nodes = nodes.ToImmutableList(),
             Vehicles = vehicles.ToImmutableList()
         };
     }

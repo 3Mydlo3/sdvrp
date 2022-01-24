@@ -1,11 +1,8 @@
-﻿using SDVRP.App.Problem.Common.Nodes;
-using SDVRP.App.Problem.Common.Vehicles;
-
-namespace SDVRP.App.Problem.Algorithms;
+﻿namespace SDVRP.App.Problem.Algorithms;
 
 internal record Move
 {
-    public Vehicle Vehicle { get; init; }
+    public int VehicleId { get; init; }
     
-    public Node Node { get; init; }
+    public int NodeId { get; init; }
 }

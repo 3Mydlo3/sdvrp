@@ -12,9 +12,11 @@ public record Vehicle
 
     public int FreeCapacity => Capacity - LoadedCapacity;
 
-    public ImmutableList<VisitedNode> Nodes { get; init; } = ImmutableList<VisitedNode>.Empty;
+    public int OverloadCapacity => -FreeCapacity;
+
+    public ImmutableList<VisitedNode> Path { get; init; } = ImmutableList<VisitedNode>.Empty;
     
-    private int LoadedCapacity => Nodes.Sum(x => x.Load);
+    private int LoadedCapacity => Path.Sum(x => x.Load);
 
     public (Vehicle LoadedVehicle, Node LoadedNode) Load(Node node)
     {
@@ -23,7 +25,7 @@ public record Vehicle
         return (
             vehicle with
             {
-                Nodes = vehicle.Nodes.Add(new VisitedNode {Load = loadedFromNode, Node = node})
+                Path = vehicle.Path.Add(new VisitedNode {Load = loadedFromNode, Node = node})
             },
             node with
             {
@@ -32,7 +34,7 @@ public record Vehicle
     }
 
     public double CalculateCost(Func<double, double> costPerDistanceUnitFunc)
-        => Nodes
+        => Path
             .Select(x => x.Node)
             .ToList()
             .CalculateCost(costPerDistanceUnitFunc);

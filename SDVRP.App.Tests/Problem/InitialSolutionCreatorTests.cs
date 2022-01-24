@@ -57,7 +57,7 @@ public class InitialSolutionCreatorTests
                 {
                     Id = 1,
                     Capacity = vehicleCapacity,
-                    Nodes = new List<VisitedNode>
+                    Path = new List<VisitedNode>
                     {
                         new() { Load = 0, Node = nodes.ElementAt(0)},
                         new() { Load = 25, Node = nodes.ElementAt(1)},
@@ -68,7 +68,7 @@ public class InitialSolutionCreatorTests
                 {
                     Id = 2,
                     Capacity = vehicleCapacity,
-                    Nodes = new List<VisitedNode>
+                    Path = new List<VisitedNode>
                     {
                         new() { Load = 0, Node = nodes.ElementAt(0)},
                         new() { Load = 25, Node = nodes.ElementAt(2) with {Demand = 25}}

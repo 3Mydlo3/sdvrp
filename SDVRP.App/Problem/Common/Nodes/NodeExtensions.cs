@@ -2,6 +2,8 @@
 
 public static class NodeExtensions
 {
+    public static Node StartingNode(this IEnumerable<Node> nodes) => nodes.Single(x => x.Id == 0);
+    
     public static double DistanceTo(this Position position1, Position position2)
         => Math.Sqrt(Math.Pow(position1.Y - position2.Y, 2) + Math.Pow(position1.X - position2.X, 2));
 

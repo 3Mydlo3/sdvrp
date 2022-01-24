@@ -18,6 +18,6 @@ public class VehicleFactory
         {
             Id = ++_lastVehicleId,
             Capacity = _vehicleCapacity,
-            Nodes = new List<VisitedNode> { new() {Load = 0, Node = startingNode} }.ToImmutableList()
+            Path = new List<VisitedNode> { new() {Load = 0, Node = startingNode} }.ToImmutableList()
         };
 }
